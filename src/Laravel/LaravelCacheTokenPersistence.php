@@ -2,7 +2,7 @@
 
 namespace PodPoint\MyUtilityGenius\Laravel;
 
-use Illuminate\Cache\Repository;
+use Illuminate\Contracts\Cache\Repository;
 use kamermans\OAuth2\Persistence\TokenPersistenceInterface;
 use kamermans\OAuth2\Token\TokenInterface;
 
