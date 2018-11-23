@@ -12,24 +12,34 @@ use kamermans\OAuth2\Signer\ClientCredentials\PostFormData;
 class Client extends GuzzleClient
 {
     /**
+     * The config for My Utility Genius API
+     *
+     * @var Config
+     */
+    private $mugConfig;
+
+    /**
      * Create a new My Utility Genius API client.
      *
-     * @param Config $config
+     * @param Config $mugConfig
      */
-    public function __construct(Config $config)
+    public function __construct(Config $mugConfig)
     {
-        $oauth = $this->getMiddleware($config);
+        $this->mugConfig = $mugConfig;
+
+        $oauth = $this->getMiddleware();
 
         $stack = HandlerStack::create();
         $stack->push($oauth);
 
         parent::__construct([
             'handler' => $stack,
-            'auth'    => 'oauth',
-            'base_uri' => $config->endpoint,
+            'auth' => 'oauth',
+            'base_uri' => $mugConfig->endpoint,
+            'mug' => $this->mugConfig,
             'defaults' => [
                 'headers' => [
-                    'Accept' => $config->mime
+                    'Accept' => $mugConfig->mime
                 ],
             ]
         ]);
@@ -38,37 +48,35 @@ class Client extends GuzzleClient
     /**
      * Get the Guzzle client for making auth requests.
      *
-     * @param Config $config
      * @return GuzzleClient
      */
-    private function getAuthClient(Config $config)
+    private function getAuthClient()
     {
         return new GuzzleClient([
-            'base_uri' => $config->authEndpoint,
+            'base_uri' => $this->mugConfig->authEndpoint,
         ]);
     }
 
     /**
      * Build the oAuth Guzzle middleware.
      *
-     * @param Config $config
      * @return OAuth2Middleware
      */
-    private function getMiddleware(Config $config)
+    private function getMiddleware()
     {
         $authConfig = [
-            'client_id' => $config->clientId,
-            'client_secret' => $config->clientSecret,
-            'scope' => $config->scope,
+            'client_id' => $this->mugConfig->clientId,
+            'client_secret' => $this->mugConfig->clientSecret,
+            'scope' => $this->mugConfig->scope,
         ];
 
-        $grantType = new ClientCredentials($this->getAuthClient($config), $authConfig);
+        $grantType = new ClientCredentials($this->getAuthClient(), $authConfig);
         $oauth = new OAuth2Middleware($grantType);
 
         $oauth->setClientCredentialsSigner(new PostFormData());
 
-        if ($config->tokenPersistence) {
-            $oauth->setTokenPersistence($config->tokenPersistence);
+        if ($this->mugConfig->tokenPersistence) {
+            $oauth->setTokenPersistence($this->mugConfig->tokenPersistence);
         }
 
         return $oauth;

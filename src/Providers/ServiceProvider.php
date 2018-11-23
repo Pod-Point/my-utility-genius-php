@@ -25,12 +25,12 @@ class ServiceProvider extends LaravelServiceProvider
     /**
      * Register bindings in the container.
      *
-     * @param Repository $cache
      * @return void
      */
-    public function register(Repository $cache)
+    public function register()
     {
-        $this->app->singleton(Client::class, function () use ($cache) {
+        $this->app->singleton(Client::class, function () {
+            $cache = $this->app->make(Repository::class);
             $config = new Config(config('my-utility-genius.auth.client-id'), config('my-utility-genius.auth.secret-key'));
             $config->setTokenPersistence(new SimpleCacheTokenPersistence($cache));
 
