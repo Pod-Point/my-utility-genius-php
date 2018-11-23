@@ -5,6 +5,7 @@ use PodPoint\MyUtilityGenius\Client;
 use kamermans\OAuth2\Persistence\NullTokenPersistence;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Tests\Server;
+use Illuminate\Http\Response as IlluminateResponse;
 
 class ClientTest extends TestCase
 {
@@ -32,19 +33,19 @@ class ClientTest extends TestCase
         $postcodeResponse = [
             'postcodeReadyDto' => [
                 'postcodeIsSwitchable' => true,
-                'suggestedFormat' => 'sample string 2'
+                'suggestedFormat' => 'sample string 2',
             ],
             'apiVersion' => 'sample string 1',
-            'uri' => 'sample string 2'
+            'uri' => 'sample string 2',
         ];
 
         Server::enqueue([
-            new Response(200, [], json_encode([
+            new Response(IlluminateResponse::HTTP_OK, [], json_encode([
                 'access_token' => 'd96tM0nCKx2G1Gz',
                 'token_type' => 'bearer',
-                'expires_in' => 86399
+                'expires_in' => 86399,
             ])),
-            new Response(200, [], json_encode($postcodeResponse)),
+            new Response(IlluminateResponse::HTTP_OK, [], json_encode($postcodeResponse)),
         ]);
 
         $config = new Config('id', 'secret', Server::$url, Server::$url);
