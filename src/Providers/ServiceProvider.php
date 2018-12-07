@@ -4,9 +4,9 @@ namespace PodPoint\MyUtilityGenius\Providers;
 
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 use Illuminate\Contracts\Cache\Repository;
-use kamermans\OAuth2\Persistence\SimpleCacheTokenPersistence;
 use PodPoint\MyUtilityGenius\Client;
 use PodPoint\MyUtilityGenius\Config;
+use PodPoint\MyUtilityGenius\Laravel\LaravelCacheTokenPersistence;
 
 class ServiceProvider extends LaravelServiceProvider
 {
@@ -30,9 +30,8 @@ class ServiceProvider extends LaravelServiceProvider
     public function register()
     {
         $this->app->singleton(Client::class, function () {
-            $cache = $this->app->make(Repository::class);
             $config = new Config(config('my-utility-genius.auth.client-id'), config('my-utility-genius.auth.secret-key'));
-            $config->setTokenPersistence(new SimpleCacheTokenPersistence($cache));
+            $config->setTokenPersistence(new LaravelCacheTokenPersistence($this->app->make(Repository::class)));
 
             return new Client($config);
         });
