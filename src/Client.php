@@ -4,10 +4,10 @@ namespace PodPoint\MyUtilityGenius;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
 use kamermans\OAuth2\GrantType\ClientCredentials;
 use kamermans\OAuth2\OAuth2Middleware;
 use kamermans\OAuth2\Signer\ClientCredentials\PostFormData;
+use Psr\Http\Message\ResponseInterface;
 
 class Client extends GuzzleClient
 {
@@ -85,10 +85,10 @@ class Client extends GuzzleClient
     /**
      * Decode a JSON response.
      *
-     * @param Response $response
+     * @param ResponseInterface $response
      * @return mixed
      */
-    public function json(Response $response)
+    public function json(ResponseInterface $response)
     {
         return \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
     }
